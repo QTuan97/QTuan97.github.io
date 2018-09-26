@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="tank.js"></script>
+    <script src="bar.js"></script>
+    <script src="score.js"></script>
+</head>
+<body>
+<canvas id="batleField" style="border:1px solid black;" width="900" height="600">
+</canvas>
+</body>
+<script>
+    let canvas = document.getElementById("batleField");
+    let ctx = canvas.getContext("2d");
+
+    let tank = new Tank(300, 150);
+    tank.size = 40;
+    tank.setVelocity(14,14);
+    let Bar01 = new Bar();
+    Bar01.move = 80;
+
+    start();
+
+    //--
+    function start() {
+        drawScore();
+        drawTank(tank);
+        Bar01.drawBar();
+        tank.GameOver();
+        setTimeout(function () {
+            drawScore();
+            tank = tank.nextState();
+            Bar01.drawBar();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (tank.GameOver()) {
+                start();
+            }
+        }, 50);
+    }
+
+    function drawTank(tank) {
+        ctx.beginPath();
+        ctx.arc(tank.x, tank.y, tank.size, 0, Math.PI * 2, false);
+        if(tank.x > canvas.width - tank.size || tank.x < tank.size){
+            ctx.strokeStyle = "#00008B";
+            ctx.fillStyle = "#00008B";
+        }
+        if(tank.y > canvas.height - tank.size || tank.y < tank.size ){
+            ctx.fillStyle = "#FFD700";
+            ctx.strokeStyle = "#FFD700";
+        }
+        if (tank.y + tank.size > Bar01.y && tank.x > Bar01.x && tank.x < Bar01.x + Bar01.dx){
+            ctx.strokeStyle = "#7CFC00";
+            ctx.fillStyle = "#7CFC00";
+        }
+
+        ctx.stroke();
+        ctx.fill();
+    }
+
+    window.addEventListener("keydown", function doKeyDown(e) {
+        if (e.keyCode == 37) {
+            if (Bar01.x - Bar01.move >= 0)
+                Bar01.x -= Bar01.move;
+        } else if (e.keyCode == 39) {
+            if (Bar01.x + Bar01.move <= canvas.width - Bar01.dx)
+                Bar01.x += Bar01.move;
+        }
+    });
+
+</script>
+</html>
